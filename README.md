@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+# AdrestusWallet FrontEnd
+Officially supported wallet of Adrestus FrontEnd cryptocurrency publicly available **Under Maintenance**
+## Overview
+Welcome to the code that powers Adrestus Wallet! This repo will always
+contain the source code for the latest publicly available Adrestus Wallet
+version. We want to make sure that we focus not only on great features
+and experiences but also security, transparency, and community involvement.
+## Features
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- [x] Create/Import the wallet with Mnemonic, Private Key and Adrestus keystore
+- [x] Deposit with the QR code.
+- [x] Switch the network to Mainnet, Testnet or Localnet.
+- [x] Send & receive ADR tokens (support the ledger wallet).
+- [x] Export private key
+- [x] View transaction history .
+- [x] Provide the api for signing the transaction
+- [x] Support our project
+- [x] LockDashboard the wallet with the 4/6 digits PIN Code
+- [x] Auto lock the wallet after timeout
+- [x] Set the pin code, pin digits and lock timer on the settings
+- [x] Add/Delete/Edit the contacts
+- [ ] View and revoke the accounts connected to the third-party website
+- [x] View the USD balance on the main page
 
-## Available Scripts
+## Development
 
-In the project directory, you can run:
+- Install [node.js](https://nodejs.org/) and npm
+- Install dependencies :
+  ```
+  npm install
+  ```
+- Run the project :
+  ```
+  npm run dev
+  ```
+- Go to Chrome Extensions page and activate the Developer Mode.
+- Click `Load Unpacked` button and point it to `/dist` folder, the extension will be autoreloading as you change the codes.
 
-### `npm start`
+## Build Frontend Extension
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Install [node.js](https://nodejs.org/) and npm.
+- Navigate to the frontend path
+  ```
+  cd frontend-react-basic-app/
+  ```
+- Delete the following if folder  exists
+  ```
+  rm -rf node_modules/
+  ```
+- Install dependencies :
+  ```
+  sudo npm install
+  ```
+- Navigate to the following line of code at `config/Testnet.js` on your local repo [ChangeIP](https://github.com/Adrestus-net/AdrestusWallet/blob/master/frontend-react-basic-app/src/config/Testnet.js) and copy-paste your local ip.
+  ```
+  const Testnet = {
+    LOGIN_URL:"http://ChangeIP:8080/authenticate",
+    REGISTER_URL:"http://ChangeIP:8080/register",
+    REFRESH_URL:"http://ChangeIP:8080/refreshtoken",
+    TRANSACTION_URL:"http://ChangeIP:8080/api/v1/transaction/"
+  }
+  module.exports = Testnet;
+  ```
+- Run the project :
+  ```
+  npm start
+  ```
+- Navigate to the following link and check if working: **use localhost and NOT local ip like the above**
+  ```
+  http://localhost:3000/Register?
+  ```
+## Optional not necessary need
+- Go to Chrome Extensions page and activate the Developer Mode.
+- Click `Load Unpacked` button and point it to `/dist` folder.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Contributing
+While our community is always welcome to contribute, please note that
+new feature development happens outside of this repo which means that
+open issues/PRs might not see a lot of activity. We do this in order to
+make sure that all code that is pushed here has passed our rigorous QA
+testing and high security standards. That being said, we’ll do our best
+to take note of feature requests or additions  some of which we might
+potentially incorporate into our codebase via our main development pipeline.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you simply need help, want to report a bug, or want to suggest a feature, the best place to do so is via our officially repository:
+- [Github](https://github.com/Adrestus-net/Adrestus)
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+And if you need support, our support knowledgebase and contact channels are here: [AdrestusWallet.app/support](https://www.adrestus.net/)
