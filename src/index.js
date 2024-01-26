@@ -1,17 +1,37 @@
+import {AuthProvider, RequireAuth} from 'react-auth-kit'
 import React from 'react';
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import refreshApi from "./Services/refreshApi";
+import Dashboard from "./pages/Dashboard";
+import "./index.css";
+import App from "./pages/test";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+        <BrowserRouter>
+            <AuthProvider authType={"cookie"}
+                          authName={"_auth"}
+                          cookieDomain={window.location.hostname}
+                          cookieSecure={false}
+                          refresh={refreshApi}>
+                <Routes>
+                    <Route path="*" element={<Navigate to="/Login"/>}/>
+                    <Route exact path="/Register" element={<Register/>}/>
+                    <Route exact path="/Login" element={<Login/>}/>
+                    <Route exact path="/test" element={<App/>}/>
+                    {/*<Route exact path="/View" element={<Dashboard/>}/>*/}
+                    {/*<Route exact path="/Dashboard" element={<Dashboard/>}/>*/}
+                    {<Route exact path={'/Dashboard'} element={
+                        <RequireAuth loginPath={'/login'}>
+                            <Dashboard/>
+                        </RequireAuth>
+                    }/>}
+                    <Route path="/Register" element={<Register/>}/>
+                </Routes>
+            </AuthProvider>
+        </BrowserRouter>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+//browserify src/crypto/Mnemonic.js --standalone myBundle > src/bundle/WalletBundle.js
