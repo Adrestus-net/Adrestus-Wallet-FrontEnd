@@ -16,8 +16,8 @@ const apiRequest = async (url = '', type, data = null, authToken = "", response 
                 },
                 body: JsonUtil.isJson(data) ? data : JSON.stringify(data)
             }
-            console.log(postOptions.body)
             response = await fetch(url, postOptions);
+            console.log(response)
         } else {
             const getOptions = {
                 method: type,

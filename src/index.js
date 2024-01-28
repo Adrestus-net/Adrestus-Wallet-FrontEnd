@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import refreshApi from "./Services/refreshApi";
 import Dashboard from "./pages/Dashboard";
 import "./index.css";
-import App from "./pages/test";
+import App from "./pages/Experiment";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

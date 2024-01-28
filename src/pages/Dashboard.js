@@ -51,7 +51,7 @@ function Dashboard() {
     const [amount, setAmount] = useState('')
     const [message, setMessage] = useState('')
     const [stages, setStages] = useState(Stages.Stage1);
-    const [balance, setBalance] = useState(100);
+    const [balance, setBalance] = useState("0");
     const [fetchError, setFetchError] = useState(null);
     const [transaction, setTransaction] = useState(null);
     const [moedas, setMoedas] = useState([]);
@@ -110,15 +110,20 @@ function Dashboard() {
             keys.current = new window.Keypair(seed);
         }
 
-        const fetchBalance = async () => {
+        async function fetchBalance() {
             try {
-                const balancemodel = new BalanceModel()
-                balancemodel.Address = address
-                balancemodel.Zone = 0
-                const result = await apiRequest(Testnet.BALANCE_URL, 'POST', balancemodel, localStorage.getItem("bearer"));
-                if (result.status == 200) {
-                    result.text().then(function (val){
-                        setBalance(val)
+                const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+                const creation = await new Creation();
+                const jsonToSend=await creation.create(String(address));
+                const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+                if (result.status === 200) {
+                    result.text().then(function (jsonBalance){
+                        const mapping=JSON.parse(jsonBalance);
+                        let myMap = new Map(Object.entries(mapping));
+                        const entry=myMap.get(address);
+                        if (entry !== undefined) {
+                            setBalance(entry)
+                        }
                     });
                 }
             } catch (err) {
@@ -126,8 +131,6 @@ function Dashboard() {
             } finally {
             }
         }
-        fetchBalance()
-
         axios
             .get(
                 "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false"
@@ -141,7 +144,7 @@ function Dashboard() {
 
         async function callAsync() {
             await window.cheerpjInit();
-            const lib = await window.cheerpjRunLibrary("/app/BloomFilter.jar");
+            const lib = await window.cheerpjRunLibrary("/app/external/BloomFilter.jar");
             bloom_filter_api.current=lib
         }
         callAsync();
@@ -150,12 +153,12 @@ function Dashboard() {
             try {
                 const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
                 const creation = await new Creation();
-                const jsonToSend=await creation.create(address);
-                const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'GET', jsonToSend, localStorage.getItem("bearer"));
+                const jsonToSend=await creation.create(String(address));
+                const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                 if (!response.ok) throw Error('Did not receive expected data');
                 const jsonRes = await response.json();
-                const map=JSON.parse(jsonRes);
-                let myMap = new Map(Object.entries(map));
+                console.log(jsonRes)
+                let myMap = new Map(Object.entries(jsonRes));
                 const entry=myMap.get(address);
                 if (entry !== undefined) {
                     setTransaction(entry)
@@ -170,6 +173,30 @@ function Dashboard() {
         fetchItems()
     }, []);
 
+    useEffect(()=>{
+        async function fetchBalance() {
+            try {
+                const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+                const creation = await new Creation();
+                const jsonToSend=await creation.create(String(address));
+                const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+                if (result.status === 200) {
+                    result.text().then(function (jsonBalance){
+                        const mapping=JSON.parse(jsonBalance);
+                        let myMap = new Map(Object.entries(mapping));
+                        const entry=myMap.get(address);
+                        if (entry !== undefined) {
+                            setBalance(entry)
+                        }
+                    });
+                }
+            } catch (err) {
+                setFetchError(err.message);
+            } finally {
+            }
+        }
+        fetchBalance();
+    },[transaction])
     useEffect(() => {
         if (stages === Stages.Stage1) {
             timer.current = setInterval(() => {
@@ -177,13 +204,12 @@ function Dashboard() {
                     try {
                         const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
                         const creation = await new Creation();
-                        const jsonToSend=await creation.create(address);
-                        const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'GET', jsonToSend, localStorage.getItem("bearer"));
-                        console.log(response)
+                        const jsonToSend=await creation.create(String(address));
+                        const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                         if (!response.ok) throw Error('Did not receive expected data');
                         const jsonRes = await response.json();
-                        const map=JSON.parse(jsonRes);
-                        let myMap = new Map(Object.entries(map));
+                        console.log(jsonRes)
+                        let myMap = new Map(Object.entries(jsonRes));
                         const entry=myMap.get(address);
                         if (entry !== undefined) {
                             setTransaction(entry)
@@ -388,6 +414,7 @@ function Dashboard() {
                                     <Balance
                                         balance={balance}
                                         setBalance={setBalance}
+                                        bloom_filter_api={bloom_filter_api}
                                     />
                                 </div>
                                 <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-1">

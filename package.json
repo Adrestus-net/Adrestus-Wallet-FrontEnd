@@ -1,6 +1,5 @@
 {
-  "homepage": "http://PanagiotisDrakatos.github.io/AdrestusWallet",
-  "name": "frontend-react-basic-app",
+  "name": "adrestus-wallet-front-end",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -52,29 +51,7 @@
     "eject": "react-scripts eject"
   },
   "jest": {
-    "roots": [
-      "<rootDir>",
-      "C:\\Users\\User\\Documents\\GitHub\\AdrestusWallet\\frontend-react-basic-app\\node_modules\\"
-    ],
-    "transform": {
-      "^.+\\.(js|jsx|mjs|node)$": "babel-jest"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "json",
-      "web.jsx",
-      "jsx",
-      ".node",
-      "mjs"
-    ],
-    "modulePaths": [
-      "<rootDir>"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "src"
-    ]
+    "verbose": true
   },
   "rules": {
     "node/no-deprecated-api": [
@@ -103,6 +80,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.20.2",
     "@svgr/webpack": "^6.5.1",
     "autoprefixer": "^10.4.14",
@@ -116,7 +94,7 @@
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.4.1",
     "sass": "^1.63.6",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.3.3",
     "tailwindcss-rtl": "^0.9.0",
     "webpack": "^5.76.3"
   },

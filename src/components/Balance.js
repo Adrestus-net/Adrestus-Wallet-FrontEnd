@@ -12,7 +12,7 @@ import apiRequest from "../Services/apiRequest";
 import Testnet from "../config/Testnet";
 
 const Balance = (props) => {
-    const {balance,setBalance} = props
+    const {balance,setBalance,bloom_filter_api} = props
     const {transaction, address} = useContext(DashBoardContext)
     const [isfromOpened, setIsfromOpened] = useState(false);
     const [fromdropDown, setFromDropdown] = React.useState('Balance Zone 0');
@@ -24,39 +24,64 @@ const Balance = (props) => {
 
         const balancemodel = new BalanceModel()
         if (val === 'Balance Zone 0') {
-            balancemodel.Address = address
-            balancemodel.Zone = 0
-            const result = await apiRequest(Testnet.BALANCE_URL, 'POST', balancemodel, localStorage.getItem("bearer"));
-            if (result.status == 200) {
-                result.text().then(function (val){
-                    setBalance(val)
+            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+            const creation = await new Creation();
+            const jsonToSend=await creation.create(String(address));
+            const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+            if (result.status === 200) {
+                result.text().then(function (jsonBalance){
+                    const mapping=JSON.parse(jsonBalance);
+                    let myMap = new Map(Object.entries(mapping));
+                    const entry=myMap.get(address);
+                    if (entry !== undefined) {
+                        setBalance(entry)
+                    }
                 });
             }
         } else if (val === 'Balance Zone 1') {
-            balancemodel.Address = address
-            balancemodel.Zone = 1
-            const result = await apiRequest(Testnet.BALANCE_URL, 'POST', balancemodel, localStorage.getItem("bearer"));
-            if (result.status == 200) {
-                result.text().then(function (val){
-                    setBalance(val)
+            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+            const creation = await new Creation();
+            const jsonToSend=await creation.create(String(address));
+            const result = await apiRequest(Testnet.BALANCE_URL+"1", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+            if (result.status === 200) {
+                result.text().then(function (jsonBalance){
+                    const mapping=JSON.parse(jsonBalance);
+                    let myMap = new Map(Object.entries(mapping));
+                    const entry=myMap.get(address);
+                    if (entry !== undefined) {
+                        setBalance(entry)
+                    }
                 });
             }
         } else if (val === 'Balance Zone 2') {
-            balancemodel.Address = address
-            balancemodel.Zone = 2
-            const result = await apiRequest(Testnet.BALANCE_URL, 'POST', balancemodel, localStorage.getItem("bearer"));
-            if (result.status == 200) {
-                result.text().then(function (val){
-                    setBalance(val)
+            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+            const creation = await new Creation();
+            const jsonToSend=await creation.create(String(address));
+            console.log("Balance: "+jsonToSend)
+            const result = await apiRequest(Testnet.BALANCE_URL+"2", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+            if (result.status === 200) {
+                result.text().then(function (jsonBalance){
+                    const mapping=JSON.parse(jsonBalance);
+                    let myMap = new Map(Object.entries(mapping));
+                    const entry=myMap.get(address);
+                    if (entry !== undefined) {
+                        setBalance(entry)
+                    }
                 });
             }
         } else if (val === 'Balance Zone 3') {
-            balancemodel.Address = address
-            balancemodel.Zone = 3
-            const result = await apiRequest(Testnet.BALANCE_URL, 'POST', balancemodel, localStorage.getItem("bearer"));
-            if (result.status == 200) {
-                result.text().then(function (val){
-                    setBalance(val)
+            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
+            const creation = await new Creation();
+            const jsonToSend=await creation.create(String(address));
+            const result = await apiRequest(Testnet.BALANCE_URL+"3", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+            if (result.status === 200) {
+                result.text().then(function (jsonBalance){
+                    const mapping=JSON.parse(jsonBalance);
+                    let myMap = new Map(Object.entries(mapping));
+                    const entry=myMap.get(address);
+                    if (entry !== undefined) {
+                        setBalance(entry)
+                    }
                 });
             }
         }
