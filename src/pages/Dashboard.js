@@ -21,6 +21,7 @@ import Keypair from '../bundle/KeypairBundle.js';
 import WalletAddress from '../bundle/WalletAddressBundle.js';
 import HashFunction from '../bundle/HashFunctionBundle.js'
 import ECDSASignature from '../bundle/ECDSASignatureBundle'
+import BloomFilter from '../bundle/BloomFilterBundle.js'
 import UtilBase64 from '../bundle/UtilBase64Bundle.js'
 import axios from "axios";
 import LockDashboard from "../components/LockDashboard";
@@ -61,7 +62,7 @@ function Dashboard() {
     const [darkmode, setDarkmode] = React.useState(document.body.classList.contains("dark"));
 
 
-    const bloom_filter_api = useRef(null);
+    const bloom_filter_api = useRef(new window.BloomFilter());
     const keys = useRef(null);
     const timer = useRef();
     const hash = useRef(new window.HashFunction());
@@ -112,9 +113,7 @@ function Dashboard() {
 
         async function fetchBalance() {
             try {
-                const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-                const creation = await new Creation();
-                const jsonToSend=await creation.create(String(address));
+                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
                 const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                 if (result.status === 200) {
                     result.text().then(function (jsonBalance){
@@ -142,18 +141,10 @@ function Dashboard() {
             .catch((error) => console.log(error));
 
 
-        async function callAsync() {
-            await window.cheerpjInit();
-            const lib = await window.cheerpjRunLibrary("/app/external/BloomFilter.jar");
-            bloom_filter_api.current=lib
-        }
-        callAsync();
 
         const fetchItems = async () => {
             try {
-                const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-                const creation = await new Creation();
-                const jsonToSend=await creation.create(String(address));
+                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
                 const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                 if (!response.ok) throw Error('Did not receive expected data');
                 const jsonRes = await response.json();
@@ -176,9 +167,7 @@ function Dashboard() {
     useEffect(()=>{
         async function fetchBalance() {
             try {
-                const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-                const creation = await new Creation();
-                const jsonToSend=await creation.create(String(address));
+                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
                 const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                 if (result.status === 200) {
                     result.text().then(function (jsonBalance){
@@ -202,9 +191,7 @@ function Dashboard() {
             timer.current = setInterval(() => {
                 const fetchItems = async () => {
                     try {
-                        const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-                        const creation = await new Creation();
-                        const jsonToSend=await creation.create(String(address));
+                        const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
                         const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
                         if (!response.ok) throw Error('Did not receive expected data');
                         const jsonRes = await response.json();

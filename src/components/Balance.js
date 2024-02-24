@@ -24,9 +24,7 @@ const Balance = (props) => {
 
         const balancemodel = new BalanceModel()
         if (val === 'Balance Zone 0') {
-            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-            const creation = await new Creation();
-            const jsonToSend=await creation.create(String(address));
+            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
             const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
             if (result.status === 200) {
                 result.text().then(function (jsonBalance){
@@ -39,9 +37,7 @@ const Balance = (props) => {
                 });
             }
         } else if (val === 'Balance Zone 1') {
-            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-            const creation = await new Creation();
-            const jsonToSend=await creation.create(String(address));
+            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
             const result = await apiRequest(Testnet.BALANCE_URL+"1", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
             if (result.status === 200) {
                 result.text().then(function (jsonBalance){
@@ -54,9 +50,7 @@ const Balance = (props) => {
                 });
             }
         } else if (val === 'Balance Zone 2') {
-            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-            const creation = await new Creation();
-            const jsonToSend=await creation.create(String(address));
+            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
             console.log("Balance: "+jsonToSend)
             const result = await apiRequest(Testnet.BALANCE_URL+"2", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
             if (result.status === 200) {
@@ -70,9 +64,7 @@ const Balance = (props) => {
                 });
             }
         } else if (val === 'Balance Zone 3') {
-            const Creation = await bloom_filter_api.current.io.Adrestus.bloom_filter.Creation;
-            const creation = await new Creation();
-            const jsonToSend=await creation.create(String(address));
+            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
             const result = await apiRequest(Testnet.BALANCE_URL+"3", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
             if (result.status === 200) {
                 result.text().then(function (jsonBalance){

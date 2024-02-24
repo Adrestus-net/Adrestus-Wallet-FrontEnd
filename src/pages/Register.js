@@ -255,7 +255,7 @@ function Register() {
             }
             if (result.status == 200) {
                 setStatus(Status.Approve)
-                setErrMessage("Registration is successfule please try to login")
+                setErrMessage("Registration is successful please try to login")
                 return
             } else {
                 setStatus(Status.Reject)
