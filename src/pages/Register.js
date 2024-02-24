@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import Stages from '../util/Stages'
@@ -18,6 +18,7 @@ import {BsFillCheckCircleFill} from "react-icons/bs";
 import Mnemonic from '../bundle/MnemonicBundle.js'
 import Keypair from '../bundle/KeypairBundle.js';
 import WalletAddress from '../bundle/WalletAddressBundle.js';
+import HashFunction from '../bundle/HashFunctionBundle.js'
 import RegisterStage1 from "./RegisterStages/RegisterStage1";
 import RegisterStage2 from "./RegisterStages/RegisterStage2";
 import RegisterStage3 from "./RegisterStages/RegisterStage3";
@@ -52,6 +53,7 @@ function Register() {
 
     const [currentStep, setCurrentStep] = useState(1);
 
+    const hash = useRef(new window.HashFunction());
     const steps = [
         {stepNo: 1, name: "Register Step 1"},
         {stepNo: 2, name: "Register Step 2"},
@@ -241,8 +243,8 @@ function Register() {
         }
         const fetchItems = async () => {
             let data = {
-                username: username,
-                password: formData.email
+                username: formData.email,
+                password: hash.current.hashString(formData.password)
             }
             const result = await apiRequest(Testnet.REGISTER_URL, 'POST', data);
             console.log(result)

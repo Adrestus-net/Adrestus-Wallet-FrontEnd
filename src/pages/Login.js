@@ -39,6 +39,7 @@ function Login() {
 
     const [email_state, setEmailState] = useState('');
     const [password_state, setPassowrdState] = useState('');
+    const hash = useRef(new window.HashFunction());
 
     useEffect(() => {
         let arr = Array.from(Array(12).keys())
@@ -94,8 +95,8 @@ function Login() {
         }
         const fetchItems = async () => {
             let data = {
-                username: username,
-                password: formData.email
+                username: formData.email,
+                password: hash.current.hashString(formData.password)
             }
             const result = await apiRequest(Testnet.LOGIN_URL, 'POST', data);
             if (result == null) {
