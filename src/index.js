@@ -3,6 +3,7 @@ import React from 'react';
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import ReactDOM from 'react-dom/client';
 import Login from "./pages/Login";
+import Test from "./pages/Test";
 import Register from "./pages/Register";
 import refreshApi from "./Services/refreshApi";
 import Dashboard from "./pages/Dashboard";
@@ -20,6 +21,7 @@ root.render(
                     <Route path="*" element={<Navigate to="/Login"/>}/>
                     <Route exact path="/Register" element={<Register/>}/>
                     <Route exact path="/Login" element={<Login/>}/>
+                    <Route exact path="/Test" element={<Test/>}/>
                     {/*<Route exact path="/View" element={<Dashboard/>}/>*/}
                     {/*<Route exact path="/Dashboard" element={<Dashboard/>}/>*/}
                     {<Route exact path={'/Dashboard'} element={

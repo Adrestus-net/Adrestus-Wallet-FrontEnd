@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState, createContext} from 'react';
+import React, {createContext, useEffect, useRef, useState} from 'react';
 import Card from "../components/card";
 import Balance from "../components/Balance";
 import Address from "../components/Address";
@@ -21,13 +21,12 @@ import Keypair from '../bundle/KeypairBundle.js';
 import WalletAddress from '../bundle/WalletAddressBundle.js';
 import HashFunction from '../bundle/HashFunctionBundle.js'
 import ECDSASignature from '../bundle/ECDSASignatureBundle'
-import BloomFilter from '../bundle/BloomFilterBundle.js'
 import UtilBase64 from '../bundle/UtilBase64Bundle.js'
 import axios from "axios";
 import LockDashboard from "../components/LockDashboard";
 import Status from "../util/Status";
 import Util from "../crypto/Util";
-import BalanceModel from "../model/BalanceModel";
+
 export const DashBoardContext = createContext();
 
 function Dashboard() {
@@ -49,6 +48,8 @@ function Dashboard() {
     const [password, setPassword] = useState(state.formData.password)
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
+    const [Arrfrom, setArrfrom] = useState(new Array(0));
+    const [ArrTo, setArrTo] = useState(new Array(0));
     const [amount, setAmount] = useState('')
     const [message, setMessage] = useState('')
     const [stages, setStages] = useState(Stages.Stage1);
@@ -62,7 +63,6 @@ function Dashboard() {
     const [darkmode, setDarkmode] = React.useState(document.body.classList.contains("dark"));
 
 
-    const bloom_filter_api = useRef(new window.BloomFilter());
     const keys = useRef(null);
     const timer = useRef();
     const hash = useRef(new window.HashFunction());
@@ -111,25 +111,43 @@ function Dashboard() {
             keys.current = new window.Keypair(seed);
         }
 
-        async function fetchBalance() {
+        const fetchItems = async () => {
             try {
-                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-                const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-                if (result.status === 200) {
-                    result.text().then(function (jsonBalance){
-                        const mapping=JSON.parse(jsonBalance);
-                        let myMap = new Map(Object.entries(mapping));
-                        const entry=myMap.get(address);
-                        if (entry !== undefined) {
-                            setBalance(entry)
-                        }
-                    });
-                }
+                const response = await apiRequest(Testnet.TRANSACTION_URL + address, 'GET', null, localStorage.getItem("bearer"))
+                console.log(response)
+                if (!response.ok) throw Error('Did not receive expected data');
+                const listItems = await response.json();
+                console.log(listItems)
+                setTransaction(listItems)
+                //listItems.from.map(val => console.log(JSON.stringify(val)));
+                setArrfrom(listItems.from)
+                setArrTo(listItems.to)
+                setFetchError(null);
             } catch (err) {
                 setFetchError(err.message);
             } finally {
             }
         }
+
+        async function fetchBalance() {
+            try {
+                await apiRequest(Testnet.BALANCE_URL + address + "/" + "0", 'GET', null, localStorage.getItem("bearer"))
+                    .then((response) => {
+                        return response.json().then((data) => {
+                            setBalance(data)
+                            return data;
+                        }).catch((err) => {
+                            console.log(err);
+                        })
+                    });
+            } catch (err) {
+                setFetchError(err.message);
+            } finally {
+            }
+        }
+
+        fetchItems()
+        fetchBalance()
         axios
             .get(
                 "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false"
@@ -139,70 +157,39 @@ function Dashboard() {
                 console.log(res.data);
             })
             .catch((error) => console.log(error));
-
-
-
-        const fetchItems = async () => {
-            try {
-                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-                const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-                if (!response.ok) throw Error('Did not receive expected data');
-                const jsonRes = await response.json();
-                console.log(jsonRes)
-                let myMap = new Map(Object.entries(jsonRes));
-                const entry=myMap.get(address);
-                if (entry !== undefined) {
-                    setTransaction(entry)
-                    setFetchError(null);
-                }
-                setFetchError("Transactions fetched from server failed please make sure your browser extensions not overlapped");
-            } catch (err) {
-                setFetchError(err.message);
-            } finally {
-            }
-        }
-        fetchItems()
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         async function fetchBalance() {
             try {
-                const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-                const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-                if (result.status === 200) {
-                    result.text().then(function (jsonBalance){
-                        const mapping=JSON.parse(jsonBalance);
-                        let myMap = new Map(Object.entries(mapping));
-                        const entry=myMap.get(address);
-                        if (entry !== undefined) {
-                            setBalance(entry)
-                        }
-                    });
-                }
+                await apiRequest(Testnet.BALANCE_URL + address + "/" + "0", 'GET', null, localStorage.getItem("bearer")).then((response) => {
+                    return response.json().then((data) => {
+                        setBalance(data)
+                        return data;
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                });
             } catch (err) {
                 setFetchError(err.message);
             } finally {
             }
         }
+
         fetchBalance();
-    },[transaction])
+    }, [transaction])
     useEffect(() => {
         if (stages === Stages.Stage1) {
             timer.current = setInterval(() => {
                 const fetchItems = async () => {
                     try {
-                        const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-                        const response = await apiRequest(Testnet.BLOOM_FILTER_URL, 'POST', String(jsonToSend), localStorage.getItem("bearer"));
+                        const response = await apiRequest(Testnet.TRANSACTION_URL + address, 'GET', null, localStorage.getItem("bearer"));
                         if (!response.ok) throw Error('Did not receive expected data');
-                        const jsonRes = await response.json();
-                        console.log(jsonRes)
-                        let myMap = new Map(Object.entries(jsonRes));
-                        const entry=myMap.get(address);
-                        if (entry !== undefined) {
-                            setTransaction(entry)
-                            setFetchError(null);
-                        }
-                        setFetchError("Transactions fetched from server failed please make sure your browser extensions not overlapped");
+                        const listItems = await response.json();
+                        setTransaction(listItems)
+                        setArrfrom(listItems.from)
+                        setArrTo(listItems.to)
+                        setFetchError(null);
                     } catch (err) {
                         setFetchError(err.message);
                     } finally {
@@ -216,7 +203,31 @@ function Dashboard() {
         return () => {
             clearInterval(timer.current);
             timer.current = null;
+            // setTransaction(null)
+            // setArrfrom(new Array(0))
+            // setArrTo(new Array(0))
         };
+    }, [transaction]);
+
+    useEffect(() => {
+        if (stages === Stages.Stage1) {
+            const fetchItems = async () => {
+                try {
+                    const response = await apiRequest(Testnet.TRANSACTION_URL + address, 'GET', null, localStorage.getItem("bearer"));
+                    if (!response.ok) throw Error('Did not receive expected data');
+                    const listItems = await response.json();
+                    setTransaction(listItems)
+                    setArrfrom(listItems.from)
+                    setArrTo(listItems.to)
+                    setFetchError(null);
+                } catch (err) {
+                    setFetchError(err.message);
+                } finally {
+                }
+            }
+            fetchItems()
+        }
+
     }, [stages]);
 
 
@@ -227,7 +238,7 @@ function Dashboard() {
             setFrom("from Address Length is invalid")
             return
         }
-        if(formData.to.length!=53){
+        if (formData.to.length != 53) {
             setTo("to Address Length is invalid ")
             return
         }
@@ -250,14 +261,14 @@ function Dashboard() {
         }
 
         var bill = Number(money);
-        console.log("bill"+bill)
-        if (isNaN(bill)|| bill===0) {
+        console.log("bill" + bill)
+        if (isNaN(bill) || bill === 0) {
             setStages(Stages.Stage2)
             setAmount("Not sufficient balances")
             return;
         }
 
-        if (balance < bill+(bill * (10 / 100))) {
+        if (balance < bill + (bill * (10 / 100))) {
             setStages(Stages.Stage2)
             setAmount("Not sufficient balances")
             return;
@@ -269,8 +280,8 @@ function Dashboard() {
         transactionModel.Status = 'PENDING'
         transactionModel.Timestamp = DateUtil.getTimeInString()
         transactionModel.Hash = ''
-        let nonce=0;
-        if(transaction!=null) {
+        let nonce = 0;
+        if (transaction != null) {
             for (let i = 0; i < transaction.from.length; i++) {
                 if (transaction.from[i].zoneFrom == formData.zoneFrom) {
                     nonce = nonce + 1
@@ -278,7 +289,7 @@ function Dashboard() {
 
             }
         }
-        transactionModel.Nonce = nonce+1
+        transactionModel.Nonce = nonce + 1
         transactionModel.BlockNumber = 0
         transactionModel.From = formData.from
         transactionModel.To = formData.to
@@ -309,11 +320,10 @@ function Dashboard() {
         const result = await apiRequest(Testnet.TRANSACTION_URL, 'POST', transactionModel, localStorage.getItem("bearer"));
         if (result.status == 200) {
             console.log("success")
-            result.text().then(function (val){
+            result.text().then(function (val) {
                 setAPIMessage(val)
             });
-        }
-        else {
+        } else {
             setMessage("Transaction Failed to send to Adrestus Network Please try again later")
         }
     }
@@ -363,7 +373,7 @@ function Dashboard() {
             return
         }
 
-        if (balance < bill+(bill * (10 / 100))) {
+        if (balance < bill + (bill * (10 / 100))) {
             setAmount("Not sufficient balance")
             setMoney(bill)
             document.getElementById("fees").value = bill * (10 / 100);
@@ -401,7 +411,6 @@ function Dashboard() {
                                     <Balance
                                         balance={balance}
                                         setBalance={setBalance}
-                                        bloom_filter_api={bloom_filter_api}
                                     />
                                 </div>
                                 <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-1">

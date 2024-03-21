@@ -12,7 +12,7 @@ import apiRequest from "../Services/apiRequest";
 import Testnet from "../config/Testnet";
 
 const Balance = (props) => {
-    const {balance,setBalance,bloom_filter_api} = props
+    const {balance, setBalance} = props
     const {transaction, address} = useContext(DashBoardContext)
     const [isfromOpened, setIsfromOpened] = useState(false);
     const [fromdropDown, setFromDropdown] = React.useState('Balance Zone 0');
@@ -22,60 +22,45 @@ const Balance = (props) => {
         if (val != '')
             setFromDropdown(val)
 
-        const balancemodel = new BalanceModel()
         if (val === 'Balance Zone 0') {
-            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-            const result = await apiRequest(Testnet.BALANCE_URL+"0", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-            if (result.status === 200) {
-                result.text().then(function (jsonBalance){
-                    const mapping=JSON.parse(jsonBalance);
-                    let myMap = new Map(Object.entries(mapping));
-                    const entry=myMap.get(address);
-                    if (entry !== undefined) {
-                        setBalance(entry)
-                    }
-                });
-            }
+            await apiRequest(Testnet.BALANCE_URL + address + "/" + "0", 'GET', null, localStorage.getItem("bearer")).then((response) => {
+                return response.json().then((data) => {
+                    setBalance(data)
+                    return data;
+                }).catch((err) => {
+                    console.log(err);
+                })
+            });
         } else if (val === 'Balance Zone 1') {
-            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-            const result = await apiRequest(Testnet.BALANCE_URL+"1", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-            if (result.status === 200) {
-                result.text().then(function (jsonBalance){
-                    const mapping=JSON.parse(jsonBalance);
-                    let myMap = new Map(Object.entries(mapping));
-                    const entry=myMap.get(address);
-                    if (entry !== undefined) {
-                        setBalance(entry)
-                    }
+            await apiRequest(Testnet.BALANCE_URL + address + "/" + "1", 'GET', null, localStorage.getItem("bearer"))
+                .then((response) => {
+                    return response.json().then((data) => {
+                        setBalance(data)
+                        return data;
+                    }).catch((err) => {
+                        console.log(err);
+                    })
                 });
-            }
+
         } else if (val === 'Balance Zone 2') {
-            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-            console.log("Balance: "+jsonToSend)
-            const result = await apiRequest(Testnet.BALANCE_URL+"2", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-            if (result.status === 200) {
-                result.text().then(function (jsonBalance){
-                    const mapping=JSON.parse(jsonBalance);
-                    let myMap = new Map(Object.entries(mapping));
-                    const entry=myMap.get(address);
-                    if (entry !== undefined) {
-                        setBalance(entry)
-                    }
-                });
-            }
+            await apiRequest(Testnet.BALANCE_URL + address + "/" + "2", 'GET', null, localStorage.getItem("bearer")).then((response) => {
+                return response.json().then((data) => {
+                    setBalance(data)
+                    return data;
+                }).catch((err) => {
+                    console.log(err);
+                })
+            });
         } else if (val === 'Balance Zone 3') {
-            const jsonToSend=bloom_filter_api.current.getStringRepresentation(String(address))
-            const result = await apiRequest(Testnet.BALANCE_URL+"3", 'POST', String(jsonToSend), localStorage.getItem("bearer"));
-            if (result.status === 200) {
-                result.text().then(function (jsonBalance){
-                    const mapping=JSON.parse(jsonBalance);
-                    let myMap = new Map(Object.entries(mapping));
-                    const entry=myMap.get(address);
-                    if (entry !== undefined) {
-                        setBalance(entry)
-                    }
+            await apiRequest(Testnet.BALANCE_URL + address + "/" + 3, 'GET', null, localStorage.getItem("bearer"))
+                .then((response) => {
+                    return response.json().then((data) => {
+                        setBalance(data)
+                        return data;
+                    }).catch((err) => {
+                        console.log(err);
+                    })
                 });
-            }
         }
     }
 
